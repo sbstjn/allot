@@ -13,7 +13,7 @@ func BenchmarkMatches(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		cmd = NewCommand("command <lorem:integer> <ipsum:string>")
 
-		cmd.Matches(NewRequest("command 12345 abcdef"))
+		cmd.Matches("command 12345 abcdef")
 	}
 
 	resultCommand = r
@@ -33,9 +33,8 @@ func TestGetString(t *testing.T) {
 
 	for _, set := range data {
 		cmd := NewCommand(set.command)
-		req := NewRequest(set.request)
 
-		value, err := cmd.GetString(req, set.parameter)
+		value, err := cmd.GetString(set.request, set.parameter)
 
 		if err != nil {
 			t.Errorf("Parsign command returned error: %v", err)
@@ -60,9 +59,8 @@ func TestGetInteger(t *testing.T) {
 
 	for _, set := range data {
 		cmd := NewCommand(set.command)
-		req := NewRequest(set.request)
 
-		value, err := cmd.GetInteger(req, set.parameter)
+		value, err := cmd.GetInteger(set.request, set.parameter)
 
 		if err != nil {
 			t.Errorf("Parsign command returned error: %v", err)
@@ -95,10 +93,9 @@ func TestMatches(t *testing.T) {
 
 	for _, set := range data {
 		cmd := NewCommand(set.command)
-		req := NewRequest(set.request)
 
-		if cmd.Matches(req) != set.matches {
-			t.Errorf("Matches() returns unexpected values. Got \"%v\", expected \"%v\"\nExpression: \"%s\" not matching \"%s\"", cmd.Matches(req), set.matches, cmd.Expression().String(), req.Text())
+		if cmd.Matches(set.request) != set.matches {
+			t.Errorf("Matches() returns unexpected values. Got \"%v\", expected \"%v\"\nExpression: \"%s\" not matching \"%s\"", cmd.Matches(set.request), set.matches, cmd.Expression().String(), set.request)
 		}
 	}
 }
@@ -152,7 +149,7 @@ func TestGetParameter(t *testing.T) {
 			t.Errorf("HasParameter is \"%v\", expected \"%v\"", cmd.HasParameter(set.parameter), set.has)
 		}
 
-		value, err := cmd.GetParameter(NewRequest(set.request), set.parameter)
+		value, err := cmd.GetParameter(set.request, set.parameter)
 
 		if err == nil && set.has && value != set.value {
 			t.Errorf("GetParameter is \"%v\", expected \"%v\"", value, set.value)
