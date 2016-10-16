@@ -3,3 +3,6 @@ test:
 
 bench:
 		go test -bench=. ./...
+
+race:
+		go test -v -race ./...
