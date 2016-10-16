@@ -78,7 +78,7 @@ func (c Command) HasParameter(param ParameterInterface) bool {
 	return false
 }
 
-// Position returns the position of a paramter
+// Position returns the position of a parameter
 func (c Command) Position(param ParameterInterface) int {
 	for index, item := range c.Parameters() {
 		if item.Equals(param) {

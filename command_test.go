@@ -82,11 +82,11 @@ func TestMatches(t *testing.T) {
 		{"command", "command", true},
 		{"command", "command example", false},
 		{"command <lorem>", "command", false},
-		{"command <lorem>", "command exmaple", true},
+		{"command <lorem>", "command example", true},
 		{"command <lorem>", "command 1234567", true},
 		{"command <lorem>", "command command", true},
 		{"command <lorem>", "example command", false},
-		{"command <lorem:integer>", "command exmaple", false},
+		{"command <lorem:integer>", "command example", false},
 		{"command <lorem:integer>", "command 1234567", true},
 		{"command <lorem>", "command command command", false},
 	}
@@ -102,9 +102,9 @@ func TestMatches(t *testing.T) {
 
 func TestPosition(t *testing.T) {
 	var data = []struct {
-		command string
-		param   Parameter
-		postion int
+		command  string
+		param    Parameter
+		position int
 	}{
 		{"command <lorem>", NewParameter("lorem", Expression("string")), 0},
 		{"command <lorem> <ipsum> <dolor> <sit> <amet>", NewParameter("dolor", Expression("string")), 2},
@@ -119,8 +119,8 @@ func TestPosition(t *testing.T) {
 	for _, set := range data {
 		cmd = NewCommand(set.command)
 
-		if cmd.Position(set.param) != set.postion {
-			t.Errorf("Position() should be \"%d\", but is \"%d\"", set.postion, cmd.Position(set.param))
+		if cmd.Position(set.param) != set.position {
+			t.Errorf("Position() should be \"%d\", but is \"%d\"", set.position, cmd.Position(set.param))
 		}
 	}
 }

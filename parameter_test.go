@@ -16,7 +16,7 @@ func TestNewWithType(t *testing.T) {
 
 	for _, set := range data {
 		if !set.p1.Equals(set.p2) {
-			t.Errorf("Equals() returned false, this should not happend!")
+			t.Errorf("Equals() returned false, this should not happen!")
 		}
 	}
 }
