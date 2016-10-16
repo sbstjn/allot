@@ -8,10 +8,9 @@ The **allot** library supports placeholders and regular expressions for paramete
 
 ```go
 cmd := allot.NewCommand("revert <commits:integer> commits on <project:string>")
-req := allot.NewRequest("revert 12 commits on example")
+match, err := cmd.Match("revert 12 commits on example")
 
-if cmd.Matches(req) {
-  match, _ = cmd.Match(req)
+if (err != nil)
   fmt.Printf("Revert \"%d\" on \"%s\"", match.Integer("commits"), match.String("project"))
 }
 ```

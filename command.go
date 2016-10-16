@@ -10,12 +10,12 @@ import (
 // CommandInterface is the interface
 type CommandInterface interface {
 	Expression() *regexp.Regexp
-	GetInteger(req RequestInterface, param string) (int, error)
-	GetParameter(req RequestInterface, param ParameterInterface) (string, error)
-	GetString(req RequestInterface, param string) (string, error)
+	GetInteger(req string, param string) (int, error)
+	GetParameter(req string, param ParameterInterface) (string, error)
+	GetString(req string, param string) (string, error)
 	HasParameter(name ParameterInterface) bool
-	Match(req RequestInterface) (MatchInterface, error)
-	Matches(req RequestInterface) bool
+	Match(req string) (MatchInterface, error)
+	Matches(req string) bool
 	Name() string
 	Parameters() []Parameter
 	Position(param ParameterInterface) int
@@ -90,24 +90,24 @@ func (c Command) Position(param ParameterInterface) int {
 }
 
 // GetParameter gets value for parameter
-func (c Command) GetParameter(req RequestInterface, param ParameterInterface) (string, error) {
+func (c Command) GetParameter(req string, param ParameterInterface) (string, error) {
 	pos := c.Position(param)
 
 	if pos == -1 {
 		return "", errors.New("Unknonw parameter for string.")
 	}
 
-	matches := c.Expression().FindAllStringSubmatch(req.Text(), -1)[0][1:]
+	matches := c.Expression().FindAllStringSubmatch(req, -1)[0][1:]
 	return matches[c.Position(param)], nil
 }
 
 // GetString returns a string parameter
-func (c Command) GetString(req RequestInterface, param string) (string, error) {
+func (c Command) GetString(req string, param string) (string, error) {
 	return c.GetParameter(req, NewParameterWithType(param, "string"))
 }
 
 // GetInteger returns an integer parameter
-func (c Command) GetInteger(req RequestInterface, param string) (int, error) {
+func (c Command) GetInteger(req string, param string) (int, error) {
 	str, err := c.GetParameter(req, NewParameterWithType(param, "integer"))
 
 	if err != nil {
@@ -118,7 +118,7 @@ func (c Command) GetInteger(req RequestInterface, param string) (int, error) {
 }
 
 // Match returns matches command
-func (c Command) Match(req RequestInterface) (MatchInterface, error) {
+func (c Command) Match(req string) (MatchInterface, error) {
 	if c.Matches(req) {
 		return Match{c, req}, nil
 	}
@@ -127,8 +127,8 @@ func (c Command) Match(req RequestInterface) (MatchInterface, error) {
 }
 
 // Matches checks if a comand definition matches a request
-func (c Command) Matches(req RequestInterface) bool {
-	return c.Name() == req.Command() && c.Expression().MatchString(req.Text())
+func (c Command) Matches(req string) bool {
+	return c.Name() == strings.Split(req, " ")[0] && c.Expression().MatchString(req)
 }
 
 // NewCommand returns a new command

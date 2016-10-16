@@ -9,7 +9,7 @@ type MatchInterface interface {
 // Match is
 type Match struct {
 	Command CommandInterface
-	Request RequestInterface
+	Request string
 }
 
 // String returns strin parameter
