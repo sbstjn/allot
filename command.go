@@ -1,14 +1,18 @@
 package allot
 
 import (
+	"errors"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
 // CommandInterface is the interface
 type CommandInterface interface {
 	Expression() *regexp.Regexp
-	GetParameter(req RequestInterface, param ParameterInterface) string
+	GetParameter(req RequestInterface, param ParameterInterface) (string, error)
+	GetString(req RequestInterface, param string) (string, error)
+	GetInteger(req RequestInterface, param string) (int, error)
 	HasParameter(name ParameterInterface) bool
 	Matches(req RequestInterface) bool
 	Name() string
@@ -85,9 +89,31 @@ func (c Command) Position(param ParameterInterface) int {
 }
 
 // GetParameter gets value for parameter
-func (c Command) GetParameter(req RequestInterface, param ParameterInterface) string {
+func (c Command) GetParameter(req RequestInterface, param ParameterInterface) (string, error) {
+	pos := c.Position(param)
+
+	if pos == -1 {
+		return "", errors.New("Unknonw parameter for string.")
+	}
+
 	matches := c.Expression().FindAllStringSubmatch(req.Text(), -1)[0][1:]
-	return matches[c.Position(param)]
+	return matches[c.Position(param)], nil
+}
+
+// GetString returns a string parameter
+func (c Command) GetString(req RequestInterface, param string) (string, error) {
+	return c.GetParameter(req, NewParameterWithType(param, "string"))
+}
+
+// GetInteger returns an integer parameter
+func (c Command) GetInteger(req RequestInterface, param string) (int, error) {
+	str, err := c.GetParameter(req, NewParameterWithType(param, "integer"))
+
+	if err != nil {
+		return 0, err
+	}
+
+	return strconv.Atoi(str)
 }
 
 // Matches checks if a comand definition matches a request

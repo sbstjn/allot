@@ -19,6 +19,61 @@ func BenchmarkMatches(b *testing.B) {
 	resultCommand = r
 }
 
+func TestGetString(t *testing.T) {
+	var data = []struct {
+		command   string
+		request   string
+		parameter string
+		value     string
+	}{
+		{"command <param1>", "command lorem", "param1", "lorem"},
+		{"deploy <project:string> to <environment:string>", "deploy example to stage", "project", "example"},
+		{"deploy <project:string> to <environment:string>", "deploy example to stage", "environment", "stage"},
+	}
+
+	for _, set := range data {
+		cmd := NewCommand(set.command)
+		req := NewRequest(set.request)
+
+		value, err := cmd.GetString(req, set.parameter)
+
+		if err != nil {
+			t.Errorf("Parsign command returned error: %v", err)
+		}
+
+		if value != set.value {
+			t.Errorf("GetString() returned incorrect value. Got \"%s\", expected \"%s\"", value, set.value)
+		}
+	}
+}
+
+func TestGetInteger(t *testing.T) {
+	var data = []struct {
+		command   string
+		request   string
+		parameter string
+		value     int
+	}{
+		{"command <param1:integer>", "command 1234", "param1", 1234},
+		{"revert from <project:string> last <commits:integer> commits", "revert from example last 51 commits", "commits", 51},
+	}
+
+	for _, set := range data {
+		cmd := NewCommand(set.command)
+		req := NewRequest(set.request)
+
+		value, err := cmd.GetInteger(req, set.parameter)
+
+		if err != nil {
+			t.Errorf("Parsign command returned error: %v", err)
+		}
+
+		if value != set.value {
+			t.Errorf("GetString() returned incorrect value. Got \"%d\", expected \"%d\"", value, set.value)
+		}
+	}
+}
+
 func TestMatches(t *testing.T) {
 	var data = []struct {
 		command string
@@ -97,8 +152,10 @@ func TestGetParameter(t *testing.T) {
 			t.Errorf("HasParameter is \"%v\", expected \"%v\"", cmd.HasParameter(set.parameter), set.has)
 		}
 
-		if set.has && cmd.GetParameter(NewRequest(set.request), set.parameter) != set.value {
-			t.Errorf("GetParameter is \"%v\", expected \"%v\"", cmd.GetParameter(NewRequest(set.request), set.parameter), set.value)
+		value, err := cmd.GetParameter(NewRequest(set.request), set.parameter)
+
+		if err == nil && set.has && value != set.value {
+			t.Errorf("GetParameter is \"%v\", expected \"%v\"", value, set.value)
 		}
 	}
 }
