@@ -7,18 +7,14 @@ The **allot** library supports placeholders and regular expressions for paramete
 ## Usage
 
 ```go
-cmd := allot.NewCommand("deploy <project:string> to <env:string>")
-req := allot.NewRequest("deploy allot to live")
+cmd := allot.NewCommand("revert <commits:integer> commits on <project:string>")
+req := allot.NewRequest("revert 12 commits on example")
 
 if cmd.Matches(req) {
-    fmt.Printf(
-      "Deploy \"%s\" to \"%s\"",
-      cmd.ParamString(req, "project"),
-      cmd.ParamString(req, "env"),
-    )
+  match, _ = cmd.Match(req)
+  fmt.Printf("Revert \"%d\" on \"%s\"", match.Integer("commits"), match.String("project"))
 }
 ```
-
 
 ## Examples
 
