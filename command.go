@@ -10,10 +10,11 @@ import (
 // CommandInterface is the interface
 type CommandInterface interface {
 	Expression() *regexp.Regexp
+	GetInteger(req RequestInterface, param string) (int, error)
 	GetParameter(req RequestInterface, param ParameterInterface) (string, error)
 	GetString(req RequestInterface, param string) (string, error)
-	GetInteger(req RequestInterface, param string) (int, error)
 	HasParameter(name ParameterInterface) bool
+	Match(req RequestInterface) (MatchInterface, error)
 	Matches(req RequestInterface) bool
 	Name() string
 	Parameters() []Parameter
@@ -114,6 +115,15 @@ func (c Command) GetInteger(req RequestInterface, param string) (int, error) {
 	}
 
 	return strconv.Atoi(str)
+}
+
+// Match returns matches command
+func (c Command) Match(req RequestInterface) (MatchInterface, error) {
+	if c.Matches(req) {
+		return Match{c, req}, nil
+	}
+
+	return nil, errors.New("Request does not match Command.")
 }
 
 // Matches checks if a comand definition matches a request
