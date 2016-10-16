@@ -12,6 +12,8 @@ match, err := cmd.Match("revert 12 commits on example")
 
 if (err != nil)
   fmt.Printf("Revert \"%d\" on \"%s\"", match.Integer("commits"), match.String("project"))
+} else {
+  fmt.Println("Request did not match command.")
 }
 ```
 
