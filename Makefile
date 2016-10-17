@@ -6,3 +6,9 @@ bench:
 
 race:
 		go test -v -race ./...
+
+cover:
+		./script/coverage
+
+coveralls:
+		./script/coverage --coveralls
