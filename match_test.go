@@ -14,9 +14,7 @@ func TestMatchAndIteger(t *testing.T) {
 	}
 
 	for _, set := range data {
-		cmd := NewCommand(set.command)
-
-		match, err := cmd.Match(set.request)
+		match, err := New(set.command).Match(set.request)
 
 		if err != nil {
 			t.Errorf("Request does not match Command")
@@ -47,9 +45,7 @@ func TestMatchAndString(t *testing.T) {
 	}
 
 	for _, set := range data {
-		cmd := NewCommand(set.command)
-
-		match, err := cmd.Match(set.request)
+		match, err := New(set.command).Match(set.request)
 
 		if err != nil {
 			t.Errorf("Request does not match Command")
