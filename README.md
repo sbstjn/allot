@@ -11,7 +11,10 @@ cmd := allot.NewCommand("revert <commits:integer> commits on <project:string>")
 match, err := cmd.Match("revert 12 commits on example")
 
 if (err != nil)
-  fmt.Printf("Revert \"%d\" on \"%s\"", match.Integer("commits"), match.String("project"))
+  commits, _ = match.Integer("commits")
+  project, _ = match.String("project")
+
+  fmt.Printf("Revert \"%d\" on \"%s\"", commits, project)
 } else {
   fmt.Println("Request did not match command.")
 }
