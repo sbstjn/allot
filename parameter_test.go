@@ -5,28 +5,12 @@ import (
 	"testing"
 )
 
-func TestNewWithType(t *testing.T) {
-	var data = []struct {
-		p1 Parameter
-		p2 Parameter
-	}{
-		{NewParameter("lorem", regexp.MustCompile("[a-zA-Z0-9]+")), NewParameterWithType("lorem", "string")},
-		{NewParameter("ipsum", regexp.MustCompile("[0-9]+")), NewParameterWithType("ipsum", "integer")},
-	}
-
-	for _, set := range data {
-		if !set.p1.Equals(set.p2) {
-			t.Errorf("Equals() returned false, this should not happen!")
-		}
-	}
-}
-
 func TestExpression(t *testing.T) {
 	var data = []struct {
 		data       string
 		expression string
 	}{
-		{"string", "[a-zA-Z0-9]+"},
+		{"string", "[^\\s]+"},
 		{"integer", "[0-9]+"},
 		{"unknown", ""},
 	}
@@ -56,7 +40,7 @@ func TestParameterExpression(t *testing.T) {
 		data       string
 		expression string
 	}{
-		{"lorem", "string", "[a-zA-Z0-9]+"},
+		{"lorem", "string", "[^\\s]+"},
 		{"ipsum", "integer", "[0-9]+"},
 	}
 
@@ -103,7 +87,7 @@ func TestParameter(t *testing.T) {
 
 	var param Parameter
 	for _, set := range data {
-		param = NewParameter(set.name, Expression(set.data))
+		param = NewParameterWithType(set.name, set.data)
 
 		if param.Name() != set.name {
 			t.Errorf("param.Name() should be \"%s\", but is \"%s\"", set.name, param.Name())

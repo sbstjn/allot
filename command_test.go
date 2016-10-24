@@ -50,13 +50,13 @@ func TestPosition(t *testing.T) {
 		param    Parameter
 		position int
 	}{
-		{"command <lorem>", NewParameter("lorem", Expression("string")), 0},
-		{"command <lorem> <ipsum> <dolor> <sit> <amet>", NewParameter("dolor", Expression("string")), 2},
-		{"command <lorem> <ipsum> <dolor:integer> <sit> <amet>", NewParameter("dolor", Expression("string")), -1},
-		{"command <lorem:integer> <ipsum> <dolor:integer> <sit> <amet>", NewParameter("lorem", Expression("string")), -1},
-		{"command <lorem:integer> <ipsum> <dolor:integer> <sit> <amet>", NewParameter("lorem", Expression("integer")), 0},
-		{"command <lorem:integer> <ipsum> <lorem:string> <sit> <amet>", NewParameter("lorem", Expression("integer")), 0},
-		{"command <lorem:integer> <ipsum> <lorem:string> <sit> <amet>", NewParameter("lorem", Expression("string")), 2},
+		{"command <lorem>", NewParameterWithType("lorem", "string"), 0},
+		{"command <lorem> <ipsum> <dolor> <sit> <amet>", NewParameterWithType("dolor", "string"), 2},
+		{"command <lorem> <ipsum> <dolor:integer> <sit> <amet>", NewParameterWithType("dolor", "string"), -1},
+		{"command <lorem:integer> <ipsum> <dolor:integer> <sit> <amet>", NewParameterWithType("lorem", "string"), -1},
+		{"command <lorem:integer> <ipsum> <dolor:integer> <sit> <amet>", NewParameterWithType("lorem", "integer"), 0},
+		{"command <lorem:integer> <ipsum> <lorem:string> <sit> <amet>", NewParameterWithType("lorem", "integer"), 0},
+		{"command <lorem:integer> <ipsum> <lorem:string> <sit> <amet>", NewParameterWithType("lorem", "string"), 2},
 	}
 
 	var cmd Command

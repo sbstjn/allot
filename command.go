@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// CommandInterface is the interface
+// CommandInterface describes how to access a Command
 type CommandInterface interface {
 	Expression() *regexp.Regexp
 	Has(name ParameterInterface) bool
@@ -17,7 +17,7 @@ type CommandInterface interface {
 	Text() string
 }
 
-// Command is the struct
+// Command is a Command definition
 type Command struct {
 	text string
 }
@@ -27,17 +27,13 @@ func (c Command) Text() string {
 	return c.text
 }
 
-// Expression returns the regular expression
+// Expression returns the regular expression matching the command text
 func (c Command) Expression() *regexp.Regexp {
-	var params []string
-	expr := strings.Split(c.Text(), " ")[0]
+	expr := c.Text()
 
 	for _, param := range c.Parameters() {
-		params = append(params, "("+param.Expression().String()+")")
-	}
-
-	if len(params) > 0 {
-		expr = expr + " " + strings.Join(params, " ")
+		expr = strings.Replace(expr, "<"+param.Name()+":"+param.Data()+">", "("+param.Expression().String()+")", -1)
+		expr = strings.Replace(expr, "<"+param.Name()+">", "("+param.Expression().String()+")", -1)
 	}
 
 	return regexp.MustCompile("^" + expr + "$")
@@ -46,12 +42,20 @@ func (c Command) Expression() *regexp.Regexp {
 // Parameters returns the list of defined parameters
 func (c Command) Parameters() []Parameter {
 	var list []Parameter
-	splits := strings.Split(c.Text(), " ")
+	re := regexp.MustCompile("<(.*?)>")
+	result := re.FindAllStringSubmatch(c.Text(), -1)
 
-	for index, item := range splits {
-		if index > 0 {
-			list = append(list, Parse(item))
+	for _, p := range result {
+		if len(p) != 2 {
+			continue
 		}
+
+		pType := ""
+		if !strings.Contains(p[1], ":") {
+			pType = ":string"
+		}
+
+		list = append(list, Parse(p[1]+pType))
 	}
 
 	return list
@@ -73,7 +77,7 @@ func (c Command) Position(param ParameterInterface) int {
 	return -1
 }
 
-// Match returns matches command
+// Match returns the parameter matching the expression at the defined position
 func (c Command) Match(req string) (MatchInterface, error) {
 	if c.Matches(req) {
 		return Match{c, req}, nil
