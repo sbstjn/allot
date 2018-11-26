@@ -7,7 +7,7 @@ The **allot** library supports placeholders and regular expressions for paramete
 ## Usage
 
 ```go
-cmd := allot.NewCommand("revert <commits:integer> commits on <project:string> at (stage|prod)")
+cmd := allot.New("revert <commits:integer> commits on <project:string> at (stage|prod)")
 match, err := cmd.Match("revert 12 commits on example at prod")
 
 if (err != nil)
