@@ -40,7 +40,7 @@ func (m Match) Integer(name string) (int, error) {
 func (m Match) Parameter(param ParameterInterface) (string, error) {
 	pos := m.Command.Position(param)
 	if pos == -1 {
-		return "", errors.New("Unknonw parameter \"" + param.Name() + "\"")
+		return "", errors.New("Unknown parameter \"" + param.Name() + "\"")
 	}
 
 	matches := m.Command.Expression().FindAllStringSubmatch(m.Request, -1)[0][1:]
