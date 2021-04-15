@@ -83,7 +83,7 @@ func (c Command) Match(req string) (MatchInterface, error) {
 		return Match{c, req}, nil
 	}
 
-	return nil, errors.New("Request does not match Command.")
+	return nil, errors.New("request does not match command")
 }
 
 // Matches checks if a comand definition matches a request

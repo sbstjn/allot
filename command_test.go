@@ -116,7 +116,7 @@ func TestParameters(t *testing.T) {
 
 		for _, param := range set.parameters {
 			if !cmd.Has(param) {
-				t.Errorf("\"%s\" missing parameter.Item \"%s\"", cmd.Text(), param)
+				t.Errorf("\"%s\" missing parameter.Item \"%s\"", cmd.Text(), param.Name())
 			}
 		}
 	}

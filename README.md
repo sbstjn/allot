@@ -21,12 +21,6 @@ if (err != nil)
 }
 ```
 
-## Examples
-
-See the [hanu Slackbot](https://github.com/sbstjn/hanu) framework for a usecase for **allot**:
-
-* [Host a Golang Slack bot on Heroku](https://sbstjn.com/host-golang-slackbot-on-heroku-with-hanu.html)
-
 ## Credits
 
 * [Go coverage script from Mathias Lafeldt](https://mlafeldt.github.io/blog/test-coverage-in-go/)
