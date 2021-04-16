@@ -52,11 +52,11 @@ func (m Match) Match(position int) (string, error) {
 	matches := m.Command.Expression().FindAllStringSubmatch(m.Request, -1)
 
 	if len(matches) != 1 {
-		return "", errors.New("Unable to parse request")
+		return "", errors.New("unable to parse request")
 	}
 
-	if position >= len(matches[0]) {
-		return "", fmt.Errorf("No parameter at position %d", position)
+	if position+1 >= len(matches[0]) {
+		return "", fmt.Errorf("no parameter at position %d", position)
 	}
 
 	return matches[0][position+1], nil

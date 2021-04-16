@@ -34,7 +34,7 @@ func TestMatch(t *testing.T) {
 	}
 }
 
-func TestMatchAndIteger(t *testing.T) {
+func TestMatchAndInteger(t *testing.T) {
 	var data = []struct {
 		command   string
 		request   string
