@@ -14,11 +14,12 @@ The **allot** library supports placeholders and regular expressions for paramete
   fmt.Println("Request did not match command.")
   os.Exit(1)
  }
+ 
  commits, _ := match.Integer("commits")
  project, _ := match.String("project")
  env, _ := match.Match(2)
 
- fmt.Printf("Revert \"%d\" on \"%s\" at \"%s\"", commits, project, env)
+ fmt.Printf("Revert \"%d\" on \"%s\" at \"%s\"", commits, project, env)  # Revert 12 on example at prod
 ```
 
 ## Credits

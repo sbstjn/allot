@@ -11,8 +11,8 @@ var regexpMapping = map[string]string{
 }
 
 // Expression returns the regexp for a data type
-func Expression(data string) *regexp.Regexp {
-	if exp, ok := regexpMapping[data]; ok {
+func Expression(datatype string) *regexp.Regexp {
+	if exp, ok := regexpMapping[datatype]; ok {
 		return regexp.MustCompile(exp)
 	}
 
@@ -24,14 +24,14 @@ type ParameterInterface interface {
 	Equals(param ParameterInterface) bool
 	Expression() *regexp.Regexp
 	Name() string
-	Data() string
+	Datatype() string
 }
 
 // Parameter is the Parameter definition
 type Parameter struct {
-	name string
-	data string
-	expr *regexp.Regexp
+	name     string
+	datatype string
+	expr     *regexp.Regexp
 }
 
 // Expression returns the regexp behind the type
@@ -45,8 +45,8 @@ func (p Parameter) Name() string {
 }
 
 // Data returns the Parameter name
-func (p Parameter) Data() string {
-	return p.data
+func (p Parameter) Datatype() string {
+	return p.datatype
 }
 
 // Equals checks if two parameter are equal
@@ -55,25 +55,25 @@ func (p Parameter) Equals(param ParameterInterface) bool {
 }
 
 // NewParameterWithType returns
-func NewParameterWithType(name string, data string) Parameter {
-	return Parameter{name, data, Expression(data)}
+func NewParameterWithType(name string, datatype string) Parameter {
+	return Parameter{name, datatype, Expression(datatype)}
 }
 
 // Parse parses parameter info
 func Parse(text string) Parameter {
 	var splits []string
-	var name, data string
+	var name, datatype string
 
 	name = strings.Replace(text, "<", "", -1)
 	name = strings.Replace(name, ">", "", -1)
-	data = "string"
+	datatype = "string"
 
 	if strings.Contains(name, ":") {
 		splits = strings.Split(name, ":")
 
 		name = splits[0]
-		data = splits[1]
+		datatype = splits[1]
 	}
 
-	return NewParameterWithType(name, data)
+	return NewParameterWithType(name, datatype)
 }

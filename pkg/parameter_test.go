@@ -58,9 +58,9 @@ func TestParameterExpression(t *testing.T) {
 
 func TestParse(t *testing.T) {
 	var data = []struct {
-		text string
-		name string
-		data string
+		text     string
+		name     string
+		datatype string
 	}{
 		{"<lorem>", "lorem", "string"},
 		{"<ipsum:integer>", "ipsum", "integer"},
@@ -78,8 +78,8 @@ func TestParse(t *testing.T) {
 
 func TestParameter(t *testing.T) {
 	var data = []struct {
-		name string
-		data string
+		name     string
+		datatype string
 	}{
 		{"lorem", "string"},
 		{"ipsum", "integer"},
@@ -87,7 +87,7 @@ func TestParameter(t *testing.T) {
 
 	var param Parameter
 	for _, set := range data {
-		param = NewParameterWithType(set.name, set.data)
+		param = NewParameterWithType(set.name, set.datatype)
 
 		if param.Name() != set.name {
 			t.Errorf("param.Name() should be \"%s\", but is \"%s\"", set.name, param.Name())

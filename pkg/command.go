@@ -32,7 +32,7 @@ func (c Command) Expression() *regexp.Regexp {
 	expr := c.Text()
 
 	for _, param := range c.Parameters() {
-		expr = strings.Replace(expr, "<"+param.Name()+":"+param.Data()+">", "("+param.Expression().String()+")", -1)
+		expr = strings.Replace(expr, "<"+param.Name()+":"+param.Datatype()+">", "("+param.Expression().String()+")", -1)
 		expr = strings.Replace(expr, "<"+param.Name()+">", "("+param.Expression().String()+")", -1)
 	}
 
