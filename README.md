@@ -7,7 +7,7 @@ The **allot** library supports placeholders and regular expressions for paramete
 ## Usage
 
 ```go
-cmd := allot.NewCommand("revert <commits:integer> commits on <project:string> at (stage|prod)")
+cmd := allot.New("revert <commits:integer> commits on <project:string> at (stage|prod)")
 match, err := cmd.Match("revert 12 commits on example at prod")
 
 if (err != nil)
@@ -20,6 +20,10 @@ if (err != nil)
   fmt.Println("Request did not match command.")
 }
 ```
+
+### Regex escaping
+
+If you want to support regex escaping and hence characters like `[]()` in your commands than use `allot.NewWithEscaping()` instead of `allot.New()`.
 
 ## Examples
 
