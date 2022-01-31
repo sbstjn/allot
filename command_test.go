@@ -44,6 +44,30 @@ func TestMatches(t *testing.T) {
 	}
 }
 
+func TestEscapeMatches(t *testing.T) {
+	var data = []struct {
+		command string
+		request string
+		matches bool
+	}{
+		{"[command]", "example", false},
+		{"[command]", "[command]", true},
+		{"command", "command example", false},
+		{"[command] (<lorem>)", "command", false},
+		{"[command] (<lorem>)", "[command] (example)", true},
+		{"[command] (<lorem>)", "[command] (1234)", true},
+		{"[command] (<lorem:integer>)", "[command] (1234)", true},
+	}
+
+	for _, set := range data {
+		cmd := NewWithEscaping(set.command)
+
+		if cmd.Matches(set.request) != set.matches {
+			t.Errorf("Matches() returns unexpected values. Got \"%v\", expected \"%v\"\nExpression: \"%s\" not matching \"%s\"", cmd.Matches(set.request), set.matches, cmd.Expression().String(), set.request)
+		}
+	}
+}
+
 func TestPosition(t *testing.T) {
 	var data = []struct {
 		command  string
@@ -116,7 +140,7 @@ func TestParameters(t *testing.T) {
 
 		for _, param := range set.parameters {
 			if !cmd.Has(param) {
-				t.Errorf("\"%s\" missing parameter.Item \"%s\"", cmd.Text(), param)
+				t.Errorf("\"%s\" missing parameter.Item \"%+v\"", cmd.Text(), param)
 			}
 		}
 	}
