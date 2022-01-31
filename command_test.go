@@ -10,7 +10,14 @@ func BenchmarkMatches(b *testing.B) {
 	var r bool
 
 	for n := 0; n < b.N; n++ {
-		r = New("command <lorem:integer> <ipsum:string>").Matches("command 12345 abcdef")
+		cmd := New("command <lorem:integer> <ipsum:string>")
+		result, err := cmd.Matches("command 12345 abcdef")
+		if err != nil {
+			b.Error(err)
+			return
+		}
+
+		r = result
 	}
 
 	resultCommand = r
@@ -38,8 +45,62 @@ func TestMatches(t *testing.T) {
 	for _, set := range data {
 		cmd := New(set.command)
 
-		if cmd.Matches(set.request) != set.matches {
-			t.Errorf("Matches() returns unexpected values. Got \"%v\", expected \"%v\"\nExpression: \"%s\" not matching \"%s\"", cmd.Matches(set.request), set.matches, cmd.Expression().String(), set.request)
+		matches, err := cmd.Matches(set.request)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if matches != set.matches {
+			expr, err := cmd.Expression()
+			if err != nil {
+				t.Error(err)
+			}
+
+			t.Errorf("Matches() returns unexpected values. Got \"%v\", expected \"%v\"\nExpression: \"%s\" not matching \"%s\"", matches, set.matches, expr.String(), set.request)
+		}
+	}
+}
+
+func TestNotCompiling(t *testing.T) {
+	cmd := New("command with []() invalid regex syntax")
+	_, err := cmd.Matches("what ever")
+
+	if err == nil {
+		t.Error("Compilation of regex should have had failed")
+	}
+}
+
+func TestEscapeMatches(t *testing.T) {
+	var data = []struct {
+		command string
+		request string
+		matches bool
+	}{
+		{"[command]", "example", false},
+		{"[command]", "[command]", true},
+		{"command", "command example", false},
+		{"[command] (<lorem>)", "command", false},
+		{"[command] (<lorem>)", "[command] (example)", true},
+		{"[command] (<lorem>)", "[command] (1234)", true},
+		{"[command] (<lorem:integer>)", "[command] (1234)", true},
+	}
+
+	for _, set := range data {
+		cmd := NewWithEscaping(set.command)
+
+		matches, err := cmd.Matches(set.request)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		if matches != set.matches {
+			expr, err := cmd.Expression()
+			if err != nil {
+				t.Error(err)
+			}
+
+			t.Errorf("Matches() returns unexpected values. Got \"%v\", expected \"%v\"\nExpression: \"%s\" not matching \"%s\"", matches, set.matches, expr.String(), set.request)
 		}
 	}
 }
@@ -63,8 +124,13 @@ func TestPosition(t *testing.T) {
 	for _, set := range data {
 		cmd = New(set.command)
 
-		if cmd.Position(set.param) != set.position {
-			t.Errorf("Position() should be \"%d\", but is \"%d\"", set.position, cmd.Position(set.param))
+		pos, err := cmd.Position(set.param)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if pos != set.position {
+			t.Errorf("Position() should be \"%d\", but is \"%d\"", set.position, pos)
 		}
 	}
 }
@@ -82,9 +148,13 @@ func TestHas(t *testing.T) {
 	var cmd CommandInterface
 	for _, set := range data {
 		cmd = New(set.command)
+		has, err := cmd.Has(set.parameter)
+		if err != nil {
+			t.Error(err)
+		}
 
-		if cmd.Has(set.parameter) != set.has {
-			t.Errorf("HasParameter is \"%v\", expected \"%v\"", cmd.Has(set.parameter), set.has)
+		if has != set.has {
+			t.Errorf("HasParameter is \"%v\", expected \"%v\"", has, set.has)
 		}
 	}
 }
@@ -115,8 +185,13 @@ func TestParameters(t *testing.T) {
 		}
 
 		for _, param := range set.parameters {
-			if !cmd.Has(param) {
-				t.Errorf("\"%s\" missing parameter.Item \"%s\"", cmd.Text(), param)
+			has, err := cmd.Has(param)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if !has {
+				t.Errorf("\"%s\" missing parameter.Item \"%+v\"", cmd.Text(), param)
 			}
 		}
 	}

@@ -38,18 +38,33 @@ func (m Match) Integer(name string) (int, error) {
 
 // Parameter returns the value for a parameter
 func (m Match) Parameter(param ParameterInterface) (string, error) {
-	pos := m.Command.Position(param)
+	pos, err := m.Command.Position(param)
+	if err != nil {
+		return "", err
+	}
+
 	if pos == -1 {
 		return "", errors.New("Unknonw parameter \"" + param.Name() + "\"")
 	}
 
-	matches := m.Command.Expression().FindAllStringSubmatch(m.Request, -1)[0][1:]
-	return matches[m.Command.Position(param)], nil
+	expr, err := m.Command.Expression()
+	if err != nil {
+		return "", err
+	}
+
+	matches := expr.FindAllStringSubmatch(m.Request, -1)[0][1:]
+
+	return matches[pos], nil
 }
 
 // Match returns the match at given position
 func (m Match) Match(position int) (string, error) {
-	matches := m.Command.Expression().FindAllStringSubmatch(m.Request, -1)
+	expr, err := m.Command.Expression()
+	if err != nil {
+		return "", err
+	}
+
+	matches := expr.FindAllStringSubmatch(m.Request, -1)
 
 	if len(matches) != 1 {
 		return "", errors.New("Unable to parse request")
