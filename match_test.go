@@ -19,7 +19,12 @@ func TestMatch(t *testing.T) {
 		match, err := New(set.command).Match(set.request)
 
 		if err != nil {
-			t.Errorf("Request [%s] does not match Command [%s]\n => %s", set.request, set.command, New(set.command).Expression().String())
+			expr, err := New(set.command).Expression()
+			if err != nil {
+				t.Error(err)
+			}
+
+			t.Errorf("Request [%s] does not match Command [%s]\n => %s", set.request, set.command, expr.String())
 		}
 
 		value, err := match.Match(set.position)
@@ -49,7 +54,12 @@ func TestMatchAndIteger(t *testing.T) {
 		match, err := New(set.command).Match(set.request)
 
 		if err != nil {
-			t.Errorf("Request [%s] does not match Command [%s]\n => %s", set.request, set.command, New(set.command).Expression().String())
+			expr, err := New(set.command).Expression()
+			if err != nil {
+				t.Error(err)
+			}
+
+			t.Errorf("Request [%s] does not match Command [%s]\n => %s", set.request, set.command, expr.String())
 		}
 
 		value, err := match.Integer(set.parameter)
