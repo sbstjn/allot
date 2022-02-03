@@ -2,6 +2,7 @@ package allot
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -19,7 +20,8 @@ type CommandInterface interface {
 
 // Command is a Command definition
 type Command struct {
-	text string
+	text   string
+	escape bool
 }
 
 // Text returns the command text
@@ -29,14 +31,31 @@ func (c Command) Text() string {
 
 // Expression returns the regular expression matching the command text
 func (c Command) Expression() *regexp.Regexp {
-	expr := c.Text()
+	var expr string
 
-	for _, param := range c.Parameters() {
-		expr = strings.Replace(expr, "<"+param.Name()+":"+param.Data()+">", "("+param.Expression().String()+")", -1)
-		expr = strings.Replace(expr, "<"+param.Name()+">", "("+param.Expression().String()+")", -1)
+	if c.escape {
+		expr = regexp.QuoteMeta(c.Text())
+	} else {
+		expr = c.Text()
 	}
 
-	return regexp.MustCompile("^" + expr + "$")
+	for _, param := range c.Parameters() {
+		expr = strings.Replace(
+			expr,
+			fmt.Sprintf("<%s:%s>", param.Name(), param.Data()),
+			fmt.Sprintf("(%s)", param.Expression().String()),
+			-1,
+		)
+
+		expr = strings.Replace(
+			expr,
+			fmt.Sprintf("<%s>", param.Name()),
+			"("+param.Expression().String()+")",
+			-1,
+		)
+	}
+
+	return regexp.MustCompile(fmt.Sprintf("^%s$", expr))
 }
 
 // Parameters returns the list of defined parameters
@@ -93,5 +112,10 @@ func (c Command) Matches(req string) bool {
 
 // New returns a new command
 func New(command string) Command {
-	return Command{command}
+	return Command{command, false}
+}
+
+// NewWithEscaping returns a new command that escapes regex characters
+func NewWithEscaping(command string) Command {
+	return Command{command, true}
 }
